@@ -1,40 +1,107 @@
 package com.example.finalproject.api;
 
+import com.google.gson.annotations.SerializedName;
+import java.util.List;
+
 public class UserResponse {
-    private String _id;
+
+    @SerializedName("username")
     private String username;
+
+    @SerializedName("email")
     private String email;
-    private String phone;
-    private String role;
+
+    @SerializedName("contact")
     private Contact contact;
 
-    public static class Contact {
-        private Coordinates coordinates;
-        private String email;
-        private String address;
-        private String building;
-        private String emergencyContact;
+    @SerializedName("devices")
+    private List<Device> devices;
 
-        public static class Coordinates {
-            private double lat;
-            private double lng;
-        }
-    }
-
-    // Getter and setter methods
+    // Getter for username
     public String getUsername() {
         return username;
     }
 
+    // Getter for email
     public String getEmail() {
         return email;
     }
 
-    public String getPhone() {
-        return phone;
+    // Getter for contact
+    public Contact getContact() {
+        return contact;
     }
 
-    public String getRole() {
-        return role;
+    // Getter for devices
+    public List<Device> getDevices() {
+        return devices;
+    }
+
+    // Contact class
+    public static class Contact {
+        @SerializedName("email")
+        private String email;
+
+        @SerializedName("address")
+        private String address;
+
+        @SerializedName("building")
+        private String building;
+
+        @SerializedName("emergencycontact")
+        private String emergencyContact;
+
+        @SerializedName("coordinates")
+        private Coordinates coordinates;
+
+        // Getters for Contact fields
+        public String getEmail() {
+            return email;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public String getBuilding() {
+            return building;
+        }
+
+        public String getEmergencyContact() {
+            return emergencyContact;
+        }
+
+        public Coordinates getCoordinates() {
+            return coordinates;
+        }
+
+        // Coordinates class
+        public static class Coordinates {
+            @SerializedName("lat")
+            private double lat;
+
+            @SerializedName("lng")
+            private double lng;
+
+            // Getters for Coordinates
+            public double getLat() {
+                return lat;
+            }
+
+            public double getLng() {
+                return lng;
+            }
+        }
+    }
+
+    // Device class
+    public static class Device {
+        @SerializedName("deviceId")
+        private String deviceId;
+
+        // Getter for deviceId
+        public String getDeviceId() {
+            return deviceId;
+        }
     }
 }

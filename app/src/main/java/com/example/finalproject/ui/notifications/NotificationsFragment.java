@@ -6,38 +6,75 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.finalproject.api.ApiService;
+import com.example.finalproject.api.UserResponse;
 import com.example.finalproject.databinding.FragmentNotificationsBinding;
 
-public class NotificationsFragment extends Fragment {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+public class NotificationsFragment extends Fragment {
     private FragmentNotificationsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        // Khởi tạo ViewModel
         NotificationsViewModel notificationsViewModel =
                 new ViewModelProvider(this).get(NotificationsViewModel.class);
 
-        // Inflate layout
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // TextView để hiển thị thông tin
-        final TextView textView = binding.textNotifications;
+        final TextView textUsername = binding.textUsername;
+        final TextView textEmail = binding.textEmail;
+        final TextView textContactInfo = binding.textContactInfo;
+        final TextView textDevices = binding.textDevices;
 
-        // Lấy token từ SharedPreferences
         String token = getTokenFromSharedPreferences();
 
-        // Kiểm tra và hiển thị token
         if (token != null) {
-            textView.setText("Token: " + token);  // Hiển thị token
+            ApiService.apiService.getUserProfile("Bearer " + token).enqueue(new Callback<UserResponse>() {
+                @Override
+                public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        UserResponse user = response.body();
+
+                        textUsername.setText("Username: " + user.getUsername());
+                        textEmail.setText("Email: " + user.getEmail());
+
+                        String contactInfo = "Contact Info:\n" +
+                                "Email: " + user.getContact().getEmail() + "\n" +
+                                "Address: " + user.getContact().getAddress() + "\n" +
+                                "Building: " + user.getContact().getBuilding() + "\n" +
+                                "Emergency Contact: " + user.getContact().getEmergencyContact() + "\n" +
+                                "Coordinates: " + user.getContact().getCoordinates().getLat() +
+                                ", " + user.getContact().getCoordinates().getLng();
+                        textContactInfo.setText(contactInfo);
+
+                        StringBuilder devicesInfo = new StringBuilder("Devices:\n");
+                        for (UserResponse.Device device : user.getDevices()) {
+                            devicesInfo.append("Device ID: ").append(device.getDeviceId()).append("\n");
+                        }
+                        textDevices.setText(devicesInfo.toString());
+
+                    } else {
+                        textContactInfo.setText("Failed to fetch user data.");
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserResponse> call, Throwable t) {
+                    textContactInfo.setText("Error: " + t.getMessage());
+                }
+            });
         } else {
-            textView.setText("No token found.");  // Nếu không có token, hiển thị thông báo
+            Toast.makeText(getContext(), "No token found.", Toast.LENGTH_SHORT).show();
         }
 
         return root;
@@ -45,8 +82,7 @@ public class NotificationsFragment extends Fragment {
 
     private String getTokenFromSharedPreferences() {
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_prefs", getContext().MODE_PRIVATE);
-        // Lấy giá trị của token
-        return sharedPreferences.getString("token", null);  // Nếu không có token, trả về null
+        return sharedPreferences.getString("token", null);
     }
 
     @Override
