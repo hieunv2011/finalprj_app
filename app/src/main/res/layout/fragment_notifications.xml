@@ -66,8 +66,13 @@
                 android:textColor="@android:color/black"
                 android:layout_marginBottom="8dp"/>
 
+            <Button
+                android:id="@+id/button_logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đăng xuất"
+                android:layout_marginTop="16dp"
+                android:textColor="@android:color/white" />
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

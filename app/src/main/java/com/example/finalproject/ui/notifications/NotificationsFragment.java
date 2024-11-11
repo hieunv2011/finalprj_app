@@ -1,10 +1,12 @@
 package com.example.finalproject.ui.notifications;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.finalproject.LoginActivity;
 import com.example.finalproject.api.ApiService;
 import com.example.finalproject.api.UserResponse;
 import com.example.finalproject.databinding.FragmentNotificationsBinding;
@@ -35,6 +38,7 @@ public class NotificationsFragment extends Fragment {
         final TextView textEmail = binding.textEmail;
         final TextView textContactInfo = binding.textContactInfo;
         final TextView textDevices = binding.textDevices;
+        Button buttonLogout = binding.buttonLogout;
 
         String token = getTokenFromSharedPreferences();
 
@@ -76,6 +80,21 @@ public class NotificationsFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "No token found.", Toast.LENGTH_SHORT).show();
         }
+
+        buttonLogout.setOnClickListener(v -> {
+            // Xóa token khỏi SharedPreferences
+            SharedPreferences preferences = requireActivity().getSharedPreferences("user_prefs", getContext().MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.remove("token");
+            editor.apply();
+
+            Toast.makeText(getContext(), "Đăng xuất thành công", Toast.LENGTH_SHORT).show();
+
+            // Chuyển đến LoginActivity
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
 
         return root;
     }

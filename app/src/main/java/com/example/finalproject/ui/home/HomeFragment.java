@@ -1,6 +1,5 @@
 package com.example.finalproject.ui.home;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.finalproject.api.ApiService;
-import com.example.finalproject.api.UserResponse;
+import com.example.finalproject.api.WeatherApiService;
+import com.example.finalproject.api.WeatherResponse;
 import com.example.finalproject.databinding.FragmentHomeBinding;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -24,53 +24,51 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        // Khởi tạo ViewModel
-        HomeViewModel HomeViewModel =
+        HomeViewModel homeViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
-        // Inflate layout
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // TextView để hiển thị thông tin
-        final TextView textView = binding.textHome;
-        final TextView textUserInfo = binding.textUserInfo;
+        final TextView cityNameText = binding.cityNameText;
+        final TextView weatherDescriptionText = binding.weatherDescriptionText;
+        final TextView temperatureText = binding.temperatureText;
 
-        // Lấy token từ SharedPreferences
-        String token = getTokenFromSharedPreferences();
+        double lat = 21.005245324082434;
+        double lon = 105.84155554692785;
+        String apiKey = "16bd87cd65f7574f7ebba2759426942a";
 
-        // Kiểm tra và hiển thị token
-        if (token != null) {
-            textView.setText("Token: " + token);  // Hiển thị token
+        WeatherApiService.retrofit.create(WeatherApiService.class)
+                .getWeather(lat, lon, apiKey)
+                .enqueue(new Callback<WeatherResponse>() {
+                    @Override
+                    public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            WeatherResponse weatherResponse = response.body();
+                            String cityName = weatherResponse.getName();
+                            String description = weatherResponse.getWeather().get(0).getDescription();
+                            double tempK = weatherResponse.getMain().getTemp();
+                            double tempC = tempK - 273.15;
 
-            // Gọi API để lấy thông tin người dùng
-            ApiService.apiService.getUserProfile("Bearer " + token).enqueue(new Callback<UserResponse>() {
-                @Override
-                public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        UserResponse user = response.body();
-                        textUserInfo.setText("User Info:\n" + "Username: " + user.getUsername() + "\nEmail: " + user.getEmail());
-                    } else {
-                        textUserInfo.setText("Failed to fetch user data.");
+                            cityNameText.setText(cityName);
+                            weatherDescriptionText.setText("Weather: " + description);
+                            temperatureText.setText(String.format("%.2f", tempC) + "°C");
+                        } else {
+                            cityNameText.setText("Failed to fetch weather data.");
+                            weatherDescriptionText.setText("Error");
+                            temperatureText.setText("Error");
+                        }
                     }
-                }
 
-                @Override
-                public void onFailure(Call<UserResponse> call, Throwable t) {
-                    textUserInfo.setText("Error: " + t.getMessage());
-                }
-            });
-        } else {
-            textView.setText("No token found.");  // Nếu không có token, hiển thị thông báo
-        }
+                    @Override
+                    public void onFailure(Call<WeatherResponse> call, Throwable t) {
+                        cityNameText.setText("Error: " + t.getMessage());
+                        weatherDescriptionText.setText("Error");
+                        temperatureText.setText("Error");
+                    }
+                });
 
         return root;
-    }
-
-    private String getTokenFromSharedPreferences() {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_prefs", getContext().MODE_PRIVATE);
-        // Lấy giá trị của token
-        return sharedPreferences.getString("token", null);  // Nếu không có token, trả về null
     }
 
     @Override
