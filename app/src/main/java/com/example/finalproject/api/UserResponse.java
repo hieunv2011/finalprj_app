@@ -4,7 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class UserResponse {
-
+    @SerializedName("_id")
+    private String id;
     @SerializedName("username")
     private String username;
 
@@ -16,6 +17,11 @@ public class UserResponse {
 
     @SerializedName("devices")
     private List<Device> devices;
+
+    // Getter for _id
+    public String getId() {
+        return id;
+    }
 
     // Getter for username
     public String getUsername() {

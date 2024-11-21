@@ -38,6 +38,7 @@ public class NotificationsFragment extends Fragment {
         final TextView textEmail = binding.textEmail;
         final TextView textContactInfo = binding.textContactInfo;
         final TextView textDevices = binding.textDevices;
+        final TextView textId = binding.textId;
         Button buttonLogout = binding.buttonLogout;
 
         String token = getTokenFromSharedPreferences();
@@ -51,6 +52,7 @@ public class NotificationsFragment extends Fragment {
 
                         textUsername.setText("Username: " + user.getUsername());
                         textEmail.setText("Email: " + user.getEmail());
+                        textId.setText("Id: " + user.getId());
 
                         String contactInfo = "Contact Info:\n" +
                                 "Email: " + user.getContact().getEmail() + "\n" +

@@ -10,6 +10,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface ApiService {
     Gson gson = new GsonBuilder()
@@ -26,4 +27,7 @@ public interface ApiService {
     Call<LoginResponse> login(@Body LoginRequest request);
     @GET("users/me")
     Call<UserResponse> getUserProfile(@Header("Authorization") String token);
+
+    @GET("users/user-devices/{userId}")
+    Call<UserDevicesResponse> getUserDevices(@Header("Authorization") String token, @Path("userId") String userId );
 }
