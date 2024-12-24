@@ -2,7 +2,7 @@
     <string name="app_name">FireAlarm</string>
     <string name="title_home">Trang chủ</string>
     <string name="title_dashboard">Bản đồ thiết bị</string>
-    <string name="title_notifications">Hồ sơ cá nhân</string>
+    <string name="title_notifications">Tài khoản</string>
     <string name="title_activity_login">Đăng nhập</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>

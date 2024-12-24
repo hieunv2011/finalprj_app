@@ -1,37 +1,67 @@
 package com.example.finalproject.ui.dashboard;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.util.GeoPoint;
 
+import com.example.finalproject.R;
 import com.example.finalproject.databinding.FragmentDashboardBinding;
+import com.example.finalproject.services.MqttHandler;
+
+import java.util.ArrayList;
 
 public class DashboardFragment extends Fragment {
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 1;
     private MapView mapView;
     private FragmentDashboardBinding binding;
+    private MqttHandler mqttHandler;
+    private Spinner idSpinner;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    private String getTokenFromSharedPreferences() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_prefs", getContext().MODE_PRIVATE);
+        return sharedPreferences.getString("token", null);
+    }
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         mapView = binding.mapView;
+        mqttHandler = new MqttHandler(getActivity());  // Truyền context vào MqttHandler
+        mqttHandler.connect("tcp://103.1.238.175:1883", "android133", "test", "testadmin");
+
+        mqttHandler.setMqttMessageListener(this::updateReceivedMessage);
+
+        idSpinner= binding.idSpinner;
+        String token = getTokenFromSharedPreferences();
+        if (token != null) {
+            fetchUserDevicesFromSharedPreferences(); // Fetch device details and subscribe to topics
+        } else {
+            // Handle case where token is null
+        }
 
         Configuration.getInstance().load(getActivity().getApplicationContext(),
                 androidx.preference.PreferenceManager.getDefaultSharedPreferences(getActivity()));
@@ -39,53 +69,84 @@ public class DashboardFragment extends Fragment {
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
 
-        // Tạo các điểm GeoPoint cho các thiết bị
-        GeoPoint device1 = new GeoPoint(21.004234299719624, 105.84485626775297); // Device01
-        GeoPoint device2 = new GeoPoint(21.010234299719624, 105.85085626775297); // Device02
-        GeoPoint device3 = new GeoPoint(21.014234299719624, 105.86085626775297); // Device03
+        // Tọa độ của Hà Nội, Việt Nam
+        GeoPoint hanoi = new GeoPoint(21.0285, 105.8542);
+        mapView.getController().setCenter(hanoi);  // Đặt điểm trung tâm là Hà Nội
+        mapView.getController().setZoom(9);  // Thiết lập mức zoom
 
-        // Thiết lập các marker cho từng điểm
-        Marker marker1 = new Marker(mapView);
-        marker1.setPosition(device1);
-        marker1.setTitle("Device01");
-        mapView.getOverlays().add(marker1);
-
-        Marker marker2 = new Marker(mapView);
-        marker2.setPosition(device2);
-        marker2.setTitle("Device02");
-        mapView.getOverlays().add(marker2);
-
-        Marker marker3 = new Marker(mapView);
-        marker3.setPosition(device3);
-        marker3.setTitle("Device03");
-        mapView.getOverlays().add(marker3);
-
-        // Thiết lập mức độ zoom và vị trí trung tâm
-        mapView.getController().setZoom(10); // Thiết lập mức độ zoom
-        mapView.getController().setCenter(device1); // Thiết lập vị trí trung tâm ban đầu (device1)
-
-        // Xử lý sự kiện khi ấn vào marker
-        marker1.setOnMarkerClickListener((marker, mapView) -> {
-            // Khi ấn vào marker1, có thể hiển thị thông tin thiết bị
-            // Ví dụ: "Device01"
-            return false; // Trả về false để tiếp tục hiển thị InfoWindow mặc định
-        });
-
-        marker2.setOnMarkerClickListener((marker, mapView) -> {
-            // Khi ấn vào marker2
-            return false;
-        });
-
-        marker3.setOnMarkerClickListener((marker, mapView) -> {
-            // Khi ấn vào marker3
-            return false;
-        });
-
-        requestPermissionsIfNecessary(new String[]{
+        requestPermissionsIfNecessary(new String[] {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
         });
 
         return root;
+    }
+
+    private void fetchUserDevicesFromSharedPreferences() {
+        // Giả sử dữ liệu thiết bị (latitude, longitude) đã được lưu trong SharedPreferences
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_prefs", getContext().MODE_PRIVATE);
+        String devicesJson = sharedPreferences.getString("user_devices", ""); // Lấy dữ liệu thiết bị dưới dạng JSON
+
+        if (!devicesJson.isEmpty()) {
+            try {
+                JSONArray devicesArray = new JSONArray(devicesJson);
+                ArrayList<String> deviceIds = new ArrayList<>();
+                // Xóa tất cả các marker hiện tại trên bản đồ
+                mapView.getOverlays().clear();
+
+                for (int i = 0; i < devicesArray.length(); i++) {
+                    JSONObject device = devicesArray.getJSONObject(i);
+                    String deviceId = device.getString("deviceId");
+                    deviceIds.add(deviceId);
+                    double latitude = device.getDouble("latitude");
+                    double longitude = device.getDouble("longitude");
+                    GeoPoint deviceLocation = new GeoPoint(latitude, longitude);
+
+                    // Tạo marker mới cho mỗi thiết bị
+                    Marker marker = new Marker(mapView);
+                    marker.setPosition(deviceLocation);
+                    marker.setTitle(deviceId);  // Đặt tên thiết bị hoặc thông tin khác
+                    mapView.getOverlays().add(marker);
+
+                    marker.setOnMarkerClickListener((clickedMarker, mapView) -> {
+                        String name = device.optString("name", "Unknown Device");  // Kiểm tra và lấy tên thiết bị
+                        clickedMarker.setSnippet(name);  // Hiển thị tên thiết bị
+                        clickedMarker.showInfoWindow();
+                        return false;
+                    });
+
+
+
+                    //Spinner
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                            R.layout.spinner_item,
+//                            android.R.layout.simple_spinner_item,
+                            deviceIds);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    idSpinner.setAdapter(adapter);
+
+                    idSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(android.widget.AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                            String selectedDeviceId = parentView.getItemAtPosition(position).toString();
+                            resetTextViewMessages();
+                            // Đăng ký vào topic "response/deviceId"
+                            mqttHandler.subscribe("response/" + selectedDeviceId);
+                            Log.d("SpinnerSelection", "Selected Device ID: " + selectedDeviceId);  // Log ra Device ID được chọn
+                        }
+
+                        @Override
+                        public void onNothingSelected(android.widget.AdapterView<?> parentView) {
+
+                        }
+                    });
+
+                }
+            } catch (Exception e) {
+                Log.e("DashboardFragment", "Error parsing devices JSON", e);
+            }
+        } else {
+            Log.d("DeviceLocation", "Không có thiết bị nào trong SharedPreferences");
+        }
     }
 
     @Override
@@ -104,6 +165,7 @@ public class DashboardFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                // Handle permission denial
             }
         }
     }
@@ -122,4 +184,36 @@ public class DashboardFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+    private void updateReceivedMessage(JSONObject jsonObject) {
+        final TextView textViewReceivedMessage1 = binding.textView1;
+        final TextView textViewReceivedMessage2 = binding.textView2;
+        final TextView textViewReceivedMessage3 = binding.textView3;
+        requireActivity().runOnUiThread(() -> {
+            try {
+                String data1 = jsonObject.getString("a");
+                String data2 = jsonObject.getString("b");
+                String data3 = jsonObject.getString("c");
+                textViewReceivedMessage1.setText("Dữ liệu A: " + data1);
+                textViewReceivedMessage2.setText("Dữ liệu B: "+ data2);
+                textViewReceivedMessage3.setText("Dữ liệu C: "+ data3);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+    private void resetTextViewMessages() {
+        final TextView textViewReceivedMessage1 = binding.textView1;
+        final TextView textViewReceivedMessage2 = binding.textView2;
+        final TextView textViewReceivedMessage3 = binding.textView3;
+
+        // Reset lại nội dung TextView về giá trị mặc định hoặc rỗng
+        textViewReceivedMessage1.setText("Dữ liệu A: Chưa có dữ liệu");
+        textViewReceivedMessage2.setText("Dữ liệu B: Chưa có dữ liệu");
+        textViewReceivedMessage3.setText("Dữ liệu C: Chưa có dữ liệu");
+    }
+
 }
+
+

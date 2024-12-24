@@ -6,81 +6,158 @@
     android:layout_height="match_parent"
     tools:context=".ui.notifications.NotificationsFragment">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/card_user_info"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:layout_constraintTop_toTopOf="parent"
+    <!-- FrameLayout chứa hình ảnh và thông tin người dùng -->
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="@color/main"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"> <!-- Căn giữa FrameLayout -->
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
-            <TextView
-                android:id="@+id/text_id"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="viewStart"
-                android:textSize="18sp"
-                android:text="ID"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="8dp"/>
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <!-- Hình ảnh người dùng -->
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:src="@drawable/ic_account_circle_24" />
+
+            <!-- Tên người dùng -->
             <TextView
                 android:id="@+id/text_username"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="viewStart"
-                android:textSize="18sp"
-                android:text="Username"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="8dp"/>
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:layout_marginBottom="8dp"
+                android:text="username"
+                android:textSize="18sp" />
 
+            <!-- ID người dùng -->
             <TextView
-                android:id="@+id/text_email"
-                android:layout_width="match_parent"
+                android:id="@+id/text_id"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAlignment="viewStart"
-                android:textSize="18sp"
-                android:text="Email"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:id="@+id/text_contact_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="viewStart"
-                android:textSize="18sp"
-                android:text="Contact Info"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:id="@+id/text_devices"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="viewStart"
-                android:textSize="18sp"
-                android:text="Devices"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="8dp"/>
-
-            <Button
-                android:id="@+id/button_logout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Đăng xuất"
-                android:layout_marginTop="16dp"
-                android:textColor="@android:color/white" />
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"
+                android:text="id"
+                android:textSize="18sp" />
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </FrameLayout>
+
+    <!-- Các thông tin người dùng như Email, Contact Info, Devices -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/frameLayout">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Email"
+            android:textAlignment="viewStart"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/text_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_input_bg"
+            android:hint="Enter your email"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Thông tin liên lạc"
+            android:textAlignment="viewStart"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/text_contact_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_input_bg"
+            android:hint="Enter contact info"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Thiết bị sở hữu "
+            android:textAlignment="viewStart"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+        <EditText
+            android:id="@+id/text_devices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_input_bg"
+            android:hint="Enter devices"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <!-- Các nút đăng xuất và lấy token -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.275">
+
+        <!-- Nút lấy Token -->
+        <Button
+            android:id="@+id/btnToken"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="@color/white"
+            android:text="Get Token"
+            android:textColor="@color/main"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Nút Đăng xuất -->
+        <Button
+            android:id="@+id/button_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_alarm"
+            android:text="Đăng xuất"
+            android:textColor="@color/white" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
