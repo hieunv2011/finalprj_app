@@ -14,6 +14,8 @@ public class UserResponse {
 
     @SerializedName("contact")
     private Contact contact;
+    @SerializedName("phone")
+    private String phone;
 
     @SerializedName("devices")
     private List<Device> devices;
@@ -31,6 +33,11 @@ public class UserResponse {
     // Getter for email
     public String getEmail() {
         return email;
+    }
+
+    // Getter for phone
+    public String getPhone() {
+        return phone;
     }
 
     // Getter for contact

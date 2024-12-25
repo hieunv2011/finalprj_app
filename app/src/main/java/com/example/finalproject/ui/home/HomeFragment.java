@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -130,6 +131,11 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<UserDevicesResponse> call, Response<UserDevicesResponse> response) {
                 final TextView deviceQuan = binding.deviceQuan;
+                ProgressBar loadingProgressBar = binding.loadingProgressBar;  // Lấy ProgressBar
+
+                // Ẩn ProgressBar khi dữ liệu đã tải xong
+                loadingProgressBar.setVisibility(View.GONE);
+
                 if (response.isSuccessful() && response.body() != null) {
                     UserDevicesResponse userDevicesResponse = response.body();
                     if (userDevicesResponse.getDevices() != null && !userDevicesResponse.getDevices().isEmpty()) {
@@ -140,8 +146,7 @@ public class HomeFragment extends Fragment {
                         devicesAdapter.notifyDataSetChanged();
 
                         deviceQuan.setText("Số lượng thiết bị: " + devicesList.size());
-                    }
-                    else {
+                    } else {
                         deviceQuan.setText("Số lượng thiết bị: 0");
                     }
                 }
@@ -149,10 +154,19 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<UserDevicesResponse> call, Throwable t) {
-                // Không làm gì khi thất bại
+                // Ẩn ProgressBar khi có lỗi
+                ProgressBar loadingProgressBar = binding.loadingProgressBar;
+                loadingProgressBar.setVisibility(View.GONE);
+
+                // Xử lý lỗi nếu cần
             }
         });
+
+        // Hiển thị ProgressBar khi bắt đầu tải dữ liệu
+        ProgressBar loadingProgressBar = binding.loadingProgressBar;
+        loadingProgressBar.setVisibility(View.VISIBLE);
     }
+
 
     @Override
     public void onDestroyView() {

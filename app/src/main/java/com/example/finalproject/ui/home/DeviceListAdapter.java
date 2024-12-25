@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.finalproject.R;
@@ -30,20 +31,23 @@ public class DeviceListAdapter extends ArrayAdapter<UserDevicesResponse.Device> 
             convertView = inflater.inflate(R.layout.list_item_device, parent, false);
         }
 
-        // Lấy đối tượng thiết bị ở vị trí hiện tại
+        // Lấy đối tượng thiết bị
         UserDevicesResponse.Device device = devices.get(position);
 
-        // Tìm các TextView trong layout
+        // Tham chiếu các view
         TextView deviceName = convertView.findViewById(R.id.device_name);
         TextView deviceLocation = convertView.findViewById(R.id.device_location);
         TextView deviceId = convertView.findViewById(R.id.device_id);
-        TextView deviceStatus = convertView.findViewById(R.id.device_status);
+        ImageView deviceStatusIcon = convertView.findViewById(R.id.device_status_icon);
 
-        // Gán dữ liệu vào các TextView
+        // Gán dữ liệu
         deviceName.setText(device.getName());
-        deviceLocation.setText("Location: " + device.getLocation());
-        deviceId.setText("Device ID: " + device.getDeviceId());
-        deviceStatus.setText("Status: " + device.getStatus());
+        deviceLocation.setText("Vị trí thiết bị: " + device.getLocation());
+        deviceId.setText("ID thiết bị: " + device.getDeviceId());
+
+        // Gán trạng thái
+        boolean isActive = "active".equals(device.getStatus());
+        deviceStatusIcon.setImageResource(isActive ? R.drawable.ic_active : R.drawable.ic_inactive);
 
         return convertView;
     }

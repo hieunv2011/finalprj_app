@@ -10,7 +10,7 @@
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="240dp"
         android:background="@color/main"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,7 +21,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@drawable/box_background"
+            >
 
             <!-- Hình ảnh người dùng -->
             <ImageView
@@ -53,6 +55,39 @@
                 android:layout_marginBottom="16dp"
                 android:text="id"
                 android:textSize="18sp" />
+            <!-- Các nút đăng xuất và lấy token -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                app:layout_constraintVertical_bias="0.275">
+
+                <!-- Nút lấy Token -->
+                <Button
+                    android:id="@+id/btnToken"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:backgroundTint="@color/white"
+                    android:text="Get Token"
+                    android:textColor="@color/main"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <!-- Nút Đăng xuất -->
+                <Button
+                    android:id="@+id/button_logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_alarm"
+                    android:text="Đăng xuất"
+                    android:textColor="@color/white" />
+            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 
@@ -62,8 +97,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:paddingTop="10dp"
+        android:paddingHorizontal="16dp"
         app:layout_constraintTop_toBottomOf="@id/frameLayout">
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:layout_width="match_parent"
@@ -104,7 +149,25 @@
             android:padding="12dp"
             android:textColor="@android:color/black"
             android:textSize="16sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Số điện thoại "
+            android:textAlignment="viewStart"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
 
+        <EditText
+            android:id="@+id/text_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/rounded_input_bg"
+            android:hint="Enter phone"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,39 +188,6 @@
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-    </LinearLayout>
 
-    <!-- Các nút đăng xuất và lấy token -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.275">
-
-        <!-- Nút lấy Token -->
-        <Button
-            android:id="@+id/btnToken"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:backgroundTint="@color/white"
-            android:text="Get Token"
-            android:textColor="@color/main"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Nút Đăng xuất -->
-        <Button
-            android:id="@+id/button_logout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_alarm"
-            android:text="Đăng xuất"
-            android:textColor="@color/white" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -130,7 +130,7 @@ public class DashboardFragment extends Fragment {
                             String selectedDeviceId = parentView.getItemAtPosition(position).toString();
                             resetTextViewMessages();
                             // Đăng ký vào topic "response/deviceId"
-                            mqttHandler.subscribe("response/" + selectedDeviceId);
+                            mqttHandler.subscribe("nvhresponse/" + selectedDeviceId);
                             Log.d("SpinnerSelection", "Selected Device ID: " + selectedDeviceId);  // Log ra Device ID được chọn
                         }
 
@@ -186,33 +186,40 @@ public class DashboardFragment extends Fragment {
     }
 
     private void updateReceivedMessage(JSONObject jsonObject) {
-        final TextView textViewReceivedMessage1 = binding.textView1;
-        final TextView textViewReceivedMessage2 = binding.textView2;
-        final TextView textViewReceivedMessage3 = binding.textView3;
+        final TextView textGas = binding.textGas;
+        final TextView textFlame = binding.textFlame;
+        final TextView textTemp = binding.textTemp;
+        final TextView textHum = binding.textHum;
         requireActivity().runOnUiThread(() -> {
             try {
-                String data1 = jsonObject.getString("a");
-                String data2 = jsonObject.getString("b");
-                String data3 = jsonObject.getString("c");
-                textViewReceivedMessage1.setText("Dữ liệu A: " + data1);
-                textViewReceivedMessage2.setText("Dữ liệu B: "+ data2);
-                textViewReceivedMessage3.setText("Dữ liệu C: "+ data3);
-
+                String gasData = jsonObject.getString("gas_ppm");
+                String flameData = jsonObject.getString("flame_detected");
+                String tempData = jsonObject.getString("temperature");
+                String humData = jsonObject.getString("humidity");
+                String dustData = jsonObject.getString("dust_density");
+                textGas.setText("Gas PPM: " + gasData);
+                textFlame.setText("Flame Detected: " + flameData);
+                textTemp.setText("Temperature: " + tempData);
+                textHum.setText("Humidity: " + humData);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
     }
+
     private void resetTextViewMessages() {
-        final TextView textViewReceivedMessage1 = binding.textView1;
-        final TextView textViewReceivedMessage2 = binding.textView2;
-        final TextView textViewReceivedMessage3 = binding.textView3;
+        final TextView textGas = binding.textGas;
+        final TextView textFlame = binding.textFlame;
+        final TextView textTemp = binding.textTemp;
+        final TextView textHum = binding.textHum;
 
         // Reset lại nội dung TextView về giá trị mặc định hoặc rỗng
-        textViewReceivedMessage1.setText("Dữ liệu A: Chưa có dữ liệu");
-        textViewReceivedMessage2.setText("Dữ liệu B: Chưa có dữ liệu");
-        textViewReceivedMessage3.setText("Dữ liệu C: Chưa có dữ liệu");
+        textGas.setText("Khí ga: Chưa có dữ liệu");
+        textFlame.setText("Nhận diện lửa: Chưa có dữ liệu");
+        textTemp.setText("Nhiệt độ: Chưa có dữ liệu");
+        textHum.setText("Độ ẩm: Chưa có dữ liệu");
     }
+
 
 }
 
