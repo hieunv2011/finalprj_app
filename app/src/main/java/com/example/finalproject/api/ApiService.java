@@ -10,6 +10,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface ApiService {
@@ -30,4 +31,10 @@ public interface ApiService {
 
     @GET("users/user-devices/{userId}")
     Call<UserDevicesResponse> getUserDevices(@Header("Authorization") String token, @Path("userId") String userId );
+
+    @PUT("users/{userId}")
+    Call<UserResponse> updateUserProfile(@Header("Authorization") String token,
+                                         @Path("userId") String userId,
+                                         @Body UserProfileRequest request);
+
 }

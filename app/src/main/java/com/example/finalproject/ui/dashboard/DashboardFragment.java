@@ -85,6 +85,8 @@ public class DashboardFragment extends Fragment {
         // Giả sử dữ liệu thiết bị (latitude, longitude) đã được lưu trong SharedPreferences
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_prefs", getContext().MODE_PRIVATE);
         String devicesJson = sharedPreferences.getString("user_devices", ""); // Lấy dữ liệu thiết bị dưới dạng JSON
+//        Log.d("SharedPreferences", "UserId: " + sharedPreferences.getString("user_id", "No Id"));
+//        Log.d("SharedPreferences", "Token: " + sharedPreferences.getString("token", "No Token"));
 
         if (!devicesJson.isEmpty()) {
             try {

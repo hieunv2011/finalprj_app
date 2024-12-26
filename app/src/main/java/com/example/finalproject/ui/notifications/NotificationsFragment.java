@@ -1,5 +1,8 @@
 package com.example.finalproject.ui.notifications;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.finalproject.LoginActivity;
 import com.example.finalproject.R;
 import com.example.finalproject.api.ApiService;
+import com.example.finalproject.api.UserProfileRequest;
 import com.example.finalproject.api.UserResponse;
 import com.example.finalproject.databinding.FragmentNotificationsBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,6 +34,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.example.finalproject.utils.Ultis;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -56,6 +62,7 @@ public class NotificationsFragment extends Fragment {
         final TextView textphone = binding.textPhone;
         Button buttonLogout = binding.buttonLogout;
         Button btnToken = binding.btnToken;
+        Button btnEdit =binding.btnEdit;
 
         String token = getTokenFromSharedPreferences();
 
@@ -92,6 +99,156 @@ public class NotificationsFragment extends Fragment {
                         }
                         devicesInfo.append(".");
                         textDevices.setText(devicesInfo.toString());
+                        btnEdit.setOnClickListener(v -> {
+                            LayoutInflater dialogInflater = LayoutInflater.from(getContext());
+                            View dialogView = dialogInflater.inflate(R.layout.dialog_edit, null);
+
+                            // Khởi tạo đối tượng UserProfileRequest để cập nhật thông tin
+                            UserProfileRequest userProfileRequest = new UserProfileRequest();
+                            UserProfileRequest.Contact contact = new UserProfileRequest.Contact();
+
+                            // Đảm bảo các thông tin email, username, phone từ user được thêm vào
+                            userProfileRequest.setEmail(user.getEmail());
+                            userProfileRequest.setUsername(user.getUsername());
+                            userProfileRequest.setPhone(user.getPhone());
+
+                            // Lấy thông tin contact từ user và thiết lập lại vào userProfileRequest
+                            contact.setAddress(user.getContact().getAddress());
+                            contact.setBuilding(user.getContact().getBuilding());
+                            contact.setEmergencyContact(user.getContact().getEmergencyContact());
+                            contact.setEmail(user.getContact().getEmail());
+
+                            // Thiết lập coordinates (lat, lng)
+                            UserProfileRequest.Contact.Coordinates coordinates = new UserProfileRequest.Contact.Coordinates();
+                            coordinates.setLat(user.getContact().getCoordinates().getLat());
+                            coordinates.setLng(user.getContact().getCoordinates().getLng());
+
+                            contact.setCoordinates(coordinates); // Thêm coordinates vào contact
+                            userProfileRequest.setContact(contact);
+
+                            // Lấy các EditText trong dialog để điền dữ liệu
+                            EditText editEmail = dialogView.findViewById(R.id.text_edit_email);
+                            EditText editAddress = dialogView.findViewById(R.id.text_edit_address);
+                            EditText editPhone = dialogView.findViewById(R.id.text_edit_phone);
+
+                            // Điền thông tin hiện tại vào các EditText
+                            editEmail.setText(userProfileRequest.getEmail());
+                            editAddress.setText(userProfileRequest.getContact().getAddress());
+                            editPhone.setText(userProfileRequest.getPhone());
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                            builder.setView(dialogView)
+                                    .setCancelable(false)
+                                    .setTitle("Chỉnh sửa thông tin");
+
+                            AlertDialog dialog = builder.create();
+                            dialog.getWindow().setBackgroundDrawableResource(R.drawable.rounded_dialog_bg);
+                            dialog.show();
+
+                            // Thêm hành động cho nút Hủy trong dialog
+                            Button btnCancel = dialogView.findViewById(R.id.button_cancel);
+                            btnCancel.setOnClickListener(v1 -> {
+                                dialog.dismiss(); // Đóng dialog khi ấn nút Hủy
+                            });
+
+                            // Thêm hành động cho nút Lưu trong dialog
+                            Button btnSave = dialogView.findViewById(R.id.button_save);
+                            btnSave.setOnClickListener(v1 -> {
+                                // Lấy dữ liệu từ các EditText và cập nhật lại đối tượng UserProfileRequest
+                                userProfileRequest.setEmail(editEmail.getText().toString());
+                                userProfileRequest.getContact().setAddress(editAddress.getText().toString());
+                                userProfileRequest.setPhone(editPhone.getText().toString());
+
+                                // Chuyển đối tượng userProfileRequest thành JSON (nếu cần thiết)
+                                Gson gson = new Gson();
+                                String json = gson.toJson(userProfileRequest);
+
+                                // Log dữ liệu đã thay đổi
+                                Log.d(Ultis.TAG, "Updated UserProfile JSON: " + json);
+
+                                // Lấy token và userId từ SharedPreferences
+                                SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("user_prefs", getContext().MODE_PRIVATE);
+                                String token = sharedPreferences.getString("token", "");  // Lấy token từ SharedPreferences
+                                String userId = sharedPreferences.getString("user_id", "");    // Lấy userId từ SharedPreferences
+
+                                // Kiểm tra nếu token hoặc userId rỗng, không thực hiện gọi API
+                                if (token.isEmpty() || userId.isEmpty()) {
+                                    Log.d(Ultis.TAG, "Token hoặc UserId không hợp lệ");
+                                    return; // Dừng lại nếu không có token hoặc userId
+                                }
+
+                                // Gọi phương thức updateUserProfile trong ApiService
+                                ApiService.apiService.updateUserProfile("Bearer " + token, userId, userProfileRequest)
+                                        .enqueue(new Callback<UserResponse>() {
+                                            @Override
+                                            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                                                if (response.isSuccessful()) {
+                                                    // Cập nhật thành công
+                                                    Log.d(Ultis.TAG, "Cập nhật thành công: " + response.body());
+
+                                                    // Sau khi lưu, gọi lại API để tải lại thông tin người dùng và hiển thị ProgressBar
+                                                    progressBar.setVisibility(View.VISIBLE);
+
+                                                    ApiService.apiService.getUserProfile("Bearer " + token).enqueue(new Callback<UserResponse>() {
+                                                        @Override
+                                                        public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                                                            progressBar.setVisibility(View.GONE); // Ẩn ProgressBar khi dữ liệu được tải
+
+                                                            if (response.isSuccessful() && response.body() != null) {
+                                                                UserResponse user = response.body();
+
+                                                                // Cập nhật lại giao diện với dữ liệu mới
+                                                                textUsername.setText(user.getUsername());
+                                                                textEmail.setText(user.getEmail());
+                                                                textId.setText("id: " + user.getId());
+                                                                textphone.setText(user.getPhone());
+
+                                                                String contactInfo = "Địa chỉ: " + user.getContact().getAddress();
+                                                                textContactInfo.setText(contactInfo);
+
+                                                                StringBuilder devicesInfo = new StringBuilder();
+                                                                List<UserResponse.Device> devices = user.getDevices();
+                                                                for (int i = 0; i < devices.size(); i++) {
+                                                                    String deviceId = devices.get(i).getDeviceId().replaceAll("[^0-9]", "");
+                                                                    devicesInfo.append("device").append(String.format("%03d", Integer.parseInt(deviceId)));
+
+                                                                    if (i < devices.size() - 1) {
+                                                                        devicesInfo.append(",");
+                                                                    }
+                                                                }
+                                                                devicesInfo.append(".");
+                                                                textDevices.setText(devicesInfo.toString());
+                                                            } else {
+                                                                textContactInfo.setText("Failed to fetch user data.");
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(Call<UserResponse> call, Throwable t) {
+                                                            progressBar.setVisibility(View.GONE); // Ẩn ProgressBar nếu có lỗi
+                                                            textContactInfo.setText("Error: " + t.getMessage());
+                                                        }
+                                                    });
+
+                                                } else {
+                                                    // Xử lý lỗi khi không cập nhật thành công
+                                                    Log.d(Ultis.TAG, "Cập nhật thất bại: " + response.message());
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<UserResponse> call, Throwable t) {
+                                                // Xử lý lỗi khi gọi API thất bại
+                                                Log.d(Ultis.TAG, "Lỗi khi gọi API: " + t.getMessage());
+                                            }
+                                        });
+
+                                // Đóng dialog sau khi lưu thông tin
+                                dialog.dismiss();
+                            });
+
+                        });
+
                     } else {
                         textContactInfo.setText("Failed to fetch user data.");
                     }
@@ -132,6 +289,10 @@ public class NotificationsFragment extends Fragment {
                         Toast.makeText(getContext(), "Fail", Toast.LENGTH_LONG).show();
                     });
         });
+
+
+
+
 
         return root;
     }
