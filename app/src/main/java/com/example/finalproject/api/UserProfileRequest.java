@@ -9,6 +9,7 @@ public class UserProfileRequest {
     private String phone;
     private String role;
     private List<Device> devices;
+    private String fcmtoken; // Thêm trường fcmtoken
 
     // Getter và Setter cho UserProfileRequest
     public Contact getContact() {
@@ -57,6 +58,14 @@ public class UserProfileRequest {
 
     public void setDevices(List<Device> devices) {
         this.devices = devices;
+    }
+
+    public String getFcmtoken() {
+        return fcmtoken; // Getter cho fcmtoken
+    }
+
+    public void setFcmtoken(String fcmtoken) {
+        this.fcmtoken = fcmtoken; // Setter cho fcmtoken
     }
 
     // Lớp Contact

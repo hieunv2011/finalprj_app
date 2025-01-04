@@ -58,7 +58,6 @@ public class NotificationsFragment extends Fragment {
         final TextView textEmail = binding.textEmail;
         final TextView textContactInfo = binding.textContactInfo;
         final TextView textDevices = binding.textDevices;
-        final TextView textId = binding.textId;
         final TextView textphone = binding.textPhone;
         Button buttonLogout = binding.buttonLogout;
         Button btnToken = binding.btnToken;
@@ -81,7 +80,6 @@ public class NotificationsFragment extends Fragment {
 
                         textUsername.setText(user.getUsername());
                         textEmail.setText(user.getEmail());
-                        textId.setText("id: " + user.getId());
                         textphone.setText(user.getPhone());
 
                         String contactInfo = "Địa chỉ: " + user.getContact().getAddress();
@@ -120,8 +118,8 @@ public class NotificationsFragment extends Fragment {
 
                             // Thiết lập coordinates (lat, lng)
                             UserProfileRequest.Contact.Coordinates coordinates = new UserProfileRequest.Contact.Coordinates();
-                            coordinates.setLat(user.getContact().getCoordinates().getLat());
-                            coordinates.setLng(user.getContact().getCoordinates().getLng());
+//                            coordinates.setLat(user.getContact().getCoordinates().getLat());
+//                            coordinates.setLng(user.getContact().getCoordinates().getLng());
 
                             contact.setCoordinates(coordinates); // Thêm coordinates vào contact
                             userProfileRequest.setContact(contact);
@@ -200,7 +198,6 @@ public class NotificationsFragment extends Fragment {
                                                                 // Cập nhật lại giao diện với dữ liệu mới
                                                                 textUsername.setText(user.getUsername());
                                                                 textEmail.setText(user.getEmail());
-                                                                textId.setText("id: " + user.getId());
                                                                 textphone.setText(user.getPhone());
 
                                                                 String contactInfo = "Địa chỉ: " + user.getContact().getAddress();
@@ -289,10 +286,6 @@ public class NotificationsFragment extends Fragment {
                         Toast.makeText(getContext(), "Fail", Toast.LENGTH_LONG).show();
                     });
         });
-
-
-
-
 
         return root;
     }

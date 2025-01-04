@@ -8,17 +8,16 @@ public class UserResponse {
     private String id;
     @SerializedName("username")
     private String username;
-
     @SerializedName("email")
     private String email;
-
     @SerializedName("contact")
     private Contact contact;
     @SerializedName("phone")
     private String phone;
-
     @SerializedName("devices")
     private List<Device> devices;
+    @SerializedName("fcmtoken")  // Thêm trường fcmtoken
+    private String fcmtoken;
 
     // Getter for _id
     public String getId() {
@@ -48,6 +47,11 @@ public class UserResponse {
     // Getter for devices
     public List<Device> getDevices() {
         return devices;
+    }
+
+    // Getter for fcmtoken
+    public String getFcmtoken() {
+        return fcmtoken;
     }
 
     // Contact class

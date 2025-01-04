@@ -37,4 +37,9 @@ public interface ApiService {
                                          @Path("userId") String userId,
                                          @Body UserProfileRequest request);
 
+    @POST("users/register")
+    Call<UserResponse> register(@Body RegisterRequest request);
+    @POST("users/verify-otp")
+    Call<VerifyOtpResponse> verifyOtp(@Body VerifyOtpRequest otpRequest);
+
 }

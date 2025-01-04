@@ -10,7 +10,7 @@
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="300dp"
         android:background="@color/main"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,62 +45,57 @@
                 android:text="username"
                 android:textSize="18sp" />
 
-            <!-- ID người dùng -->
-            <TextView
-                android:id="@+id/text_id"
-                android:textColor="@color/white"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="16dp"
-                android:text="id"
-                android:textSize="18sp" />
             <!-- Các nút đăng xuất và lấy token -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout"
                 app:layout_constraintVertical_bias="0.275">
 
-                <!-- Nút lấy Token -->
-                <Button
-                    android:id="@+id/btnEdit"
+                <!-- Dòng đầu tiên: Nút Chỉnh sửa thông tin và Gắn thiết bị -->
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="@color/white"
-                    android:text="Edit"
-                    android:textColor="@color/main"
-                    android:drawableStart="@drawable/ic_edit"
-                    android:drawablePadding="8dp"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
-                <!-- Nút Chinh sua -->
-                <Button
-                    android:id="@+id/btnToken"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:backgroundTint="@color/white"
-                    android:text="Get Token"
-                    android:textColor="@color/main"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    <Button
+                        android:id="@+id/btnEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:backgroundTint="@color/white"
+                        android:text="Chỉnh sửa thông tin"
+                        android:textColor="@color/main"
+                        android:drawableStart="@drawable/ic_edit"
+                        android:drawablePadding="8dp" />
 
-                <!-- Nút Đăng xuất -->
+                    <Button
+                        android:id="@+id/btnToken"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:backgroundTint="@color/white"
+                        android:text="Gắn thiết bị"
+                        android:textColor="@color/main" />
+                </LinearLayout>
+
+                <!-- Dòng thứ hai: Nút Đăng xuất -->
                 <Button
                     android:id="@+id/button_logout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:drawableLeft="@drawable/ic_alarm"
                     android:text="Đăng xuất"
                     android:textColor="@color/white" />
             </LinearLayout>
+
         </LinearLayout>
     </FrameLayout>
 
