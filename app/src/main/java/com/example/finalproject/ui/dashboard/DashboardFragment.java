@@ -187,27 +187,81 @@ public class DashboardFragment extends Fragment {
         binding = null;
     }
 
+//    private void updateReceivedMessage(JSONObject jsonObject) {
+//        final TextView textGas = binding.textGas;
+//        final TextView textFlame = binding.textFlame;
+//        final TextView textTemp = binding.textTemp;
+//        final TextView textHum = binding.textHum;
+//        requireActivity().runOnUiThread(() -> {
+//            try {
+//                String gasData = jsonObject.getString("gas_ppm");
+//                String flameData = jsonObject.getString("flame_detected");
+//                String tempData = jsonObject.getString("temperature");
+//                String humData = jsonObject.getString("humidity");
+//                textGas.setText("Gas PPM: " + gasData);
+//                textFlame.setText("Flame Detected: " + flameData);
+//                textTemp.setText("Temperature: " + tempData);
+//                textHum.setText("Humidity: " + humData);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
+//    }
+
+
+//    private void showMqttDataPopup(JSONObject jsonObject) {
+//    try {
+//        // Parse data từ JSONObject
+//        String gasData = jsonObject.optString("gas_ppm", "Không có dữ liệu");
+//        String flameData = jsonObject.optString("flame_detected", "Không có dữ liệu");
+//        String tempData = jsonObject.optString("temperature", "Không có dữ liệu");
+//        String humData = jsonObject.optString("humidity", "Không có dữ liệu");
+//
+//        // Tạo nội dung hiển thị
+//        String message = "Khí ga (PPM): " + gasData + "\n" +
+//                "Nhận diện lửa: " + flameData + "\n" +
+//                "Nhiệt độ: " + tempData + "\n" +
+//                "Độ ẩm: " + humData;
+//
+//        // Tạo AlertDialog
+//        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+//                .setTitle("Dữ liệu từ MQTT")
+//                .setMessage(message)
+//                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+//                .setCancelable(true)
+//                .show();
+//    } catch (Exception e) {
+//        Log.e("DashboardFragment", "Error displaying MQTT data popup", e);
+//    }
+//}
+
     private void updateReceivedMessage(JSONObject jsonObject) {
-        final TextView textGas = binding.textGas;
-        final TextView textFlame = binding.textFlame;
-        final TextView textTemp = binding.textTemp;
-        final TextView textHum = binding.textHum;
         requireActivity().runOnUiThread(() -> {
             try {
+                // Lấy dữ liệu từ JSON
                 String gasData = jsonObject.getString("gas_ppm");
                 String flameData = jsonObject.getString("flame_detected");
                 String tempData = jsonObject.getString("temperature");
                 String humData = jsonObject.getString("humidity");
-                String dustData = jsonObject.getString("dust_density");
-                textGas.setText("Gas PPM: " + gasData);
-                textFlame.setText("Flame Detected: " + flameData);
-                textTemp.setText("Temperature: " + tempData);
-                textHum.setText("Humidity: " + humData);
+
+                // Kiểm tra và hiển thị trạng thái
+                String gasStatus = gasData.equalsIgnoreCase("warning") ? "Cảnh báo" : "Bình thường";
+                String flameStatus = flameData.equalsIgnoreCase("warning") ? "Cảnh báo" : "Bình thường";
+                String tempStatus = tempData.equalsIgnoreCase("warning") ? "Cảnh báo" : "Bình thường";
+                String humStatus = humData.equalsIgnoreCase("warning") ? "Cảnh báo" : "Bình thường";
+
+                // Cập nhật TextView
+                binding.textGas.setText("Khí Gas: " + gasStatus);
+                binding.textFlame.setText("Nhận diện lửa: " + flameStatus);
+                binding.textTemp.setText("Nhiệt độ: " + tempStatus);
+                binding.textHum.setText("Độ ẩm: " + humStatus);
+
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("DashboardFragment", "Error updating received message", e);
             }
         });
     }
+
 
     private void resetTextViewMessages() {
         final TextView textGas = binding.textGas;

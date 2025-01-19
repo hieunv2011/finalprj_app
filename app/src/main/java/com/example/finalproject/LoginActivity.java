@@ -41,10 +41,47 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordEditText;
     private Button loginButton;
 
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_login);
+//
+//        usernameEditText = findViewById(R.id.usernameEditText);
+//        passwordEditText = findViewById(R.id.passwordEditText);
+//        loginButton = findViewById(R.id.loginButton);
+//
+//        TextView registerTextView = findViewById(R.id.register);
+//        registerTextView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                showRegisterDialog();
+//            }
+//        });
+//
+//        loginButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                String email = usernameEditText.getText().toString();
+//                String password = passwordEditText.getText().toString();
+//                loginUser(email, password);
+//            }
+//        });
+//    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        // Kiểm tra nếu người dùng đã đăng nhập trước đó
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", null);  // Lấy token từ SharedPreferences
+
+        if (token != null) {
+            // Nếu có token, chuyển đến MainActivity (màn hình chính)
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();  // Đóng LoginActivity để không thể quay lại
+        }
 
         usernameEditText = findViewById(R.id.usernameEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
